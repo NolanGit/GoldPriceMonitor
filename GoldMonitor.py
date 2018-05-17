@@ -40,4 +40,4 @@ while 8<CurrentTime<12 or 13.30<CurrentTime<16 or 20<CurrentTime<24:#仅在国�
 	price=GetPrice()
 	if price<266:#黄金价格一旦低于266
 		Mail(str(price))
-	time.sleep(10)
+	time.sleep(10)#每十秒爬取一次黄金价格

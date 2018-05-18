@@ -10,17 +10,26 @@ def GetPrice():
 	while 1:
 		baseurl='http://www.dyhjw.com/hjtd'
 		r = requests.get(baseurl)
+		time.sleep(5)#避免网速低而加载较慢的情况
 		content=r.text
 		soup = BeautifulSoup(content, 'lxml') 
 		divs=soup.find(class_='nom last green')
 		if divs==None:
 			divs=soup.find(class_='nom last red')
 			if divs==None:
-				print('数据获取失败，五分钟后将重试')
+				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'logging error...')
+				with open('C:\\Users\\XXX\\Documents\\goldLog.txt','a',encoding=UTF-8)as f:
+					f.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
+					f.write(soup)
+					f.write('============================================================')
+				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'logged...')
+				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取失败，五分钟后将重试')
 				time.sleep(300)
 			else:
+				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取成功（红）')
 				break
 		else:
+			print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取成功（绿）')
 			break
 	price=divs.get_text()
 	return float(price)

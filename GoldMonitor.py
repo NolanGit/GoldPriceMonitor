@@ -27,14 +27,14 @@ def GetPrice():
 def Mail(price):
 	my_sender='XXX@qq.com'
 	my_pass = 'XXX'#这个是需要到QQ邮箱里边获取的口令，不是QQ邮箱密码
-	my_user='XXXX@XX.XX;XXXX@XX.XX'
+	my_user=['XXXX@XX.XX','XXXX@XX.XX']#填写收件人邮箱
 	msg=MIMEText('黄金的价格目前为%s'%(price),'plain','utf-8',)
 	msg['From']=formataddr(["GoldMonitor",my_sender])
-	msg['To']=formataddr(["XXXX@XX.XX",my_user])
+	msg['To']=formataddr(my_user)
 	msg['Subject']="GoldPrice"
 	server=smtplib.SMTP_SSL("smtp.qq.com", 465)
 	server.login(my_sender, my_pass)
-	server.sendmail(my_sender,[my_user,],msg.as_string())
+	server.sendmail(my_sender,my_user,msg.as_string())
 	print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'邮件发送成功，一小时后重新获取')
 	server.quit()
 	time.sleep(3600)#每小时至多发送一次邮件

@@ -21,7 +21,7 @@ def GetPrice():
 				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'logging error...')
 				with open('C:\\Users\\sunhaoran\\Documents\\goldLog.txt','a',encoding='UTF-8')as f:
 					f.write(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-					f.write(soup)
+					f.write(str(soup))
 					f.write('============================================================')
 				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'logged...')
 				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取失败，五分钟后将重试')
@@ -53,6 +53,7 @@ def GetTime():
 	CurrentMin=int(time.strftime('%M',time.localtime(time.time())))
 	CurrentTime=CurrentHour+CurrentMin/100
 	return CurrentTime
+
 
 itchat.auto_login(hotReload=True)
 print('程序运行中...')

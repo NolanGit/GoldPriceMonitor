@@ -59,21 +59,24 @@ print('程序运行中...')
 ReceiverAddr=['XXX@live.com','XXX@qq.com']#填写收件人邮箱
 SenderName='GoldMonitor'
 while 1:
-	CurrentTime=GetTime()
-	while 8<CurrentTime<12 or 13.30<CurrentTime<16 or 20<CurrentTime<24:#仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
-		price=GetPrice()
-		if price<265.4:#黄金价格一旦低于265.4
-			Subject='Goldprice'
-			Content='黄金的价格目前为%s,价格较低，可以买入'%(price)
-			itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
-			MailSender(SenderName,ReceiverAddr,Subject,Content)
-		if price>275:#黄金价格一旦高于275
-			Subject='Goldprice'
-			Content='黄金的价格目前为%s,价格较高，可以卖出'%(price)
-			itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
-			MailSender(SenderName,ReceiverAddr,Subject,Content)
-		time.sleep(10)#每十秒爬取一次黄金价格
-	print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content)+'当前非交易时间,5分钟后重试')
-	time.sleep(300)
+	CurrentTime,CurrentWeek=GetTime()
+	if CurrentWeek!=0 and CurrentWeek!=6:
+		while 8<CurrentTime<12 or 13.30<CurrentTime<16 or 20<CurrentTime<24:#仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
+			price=GetPrice()
+			if price<265.5:#黄金价格一旦低于265.5
+				Subject='Goldprice'
+				Content='黄金的价格目前为%s,价格较低，可以买入'%(price)
+				itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')#微信发送消息至文件传输助手
+				MailSender(SenderName,ReceiverAddr,Subject,Content)
+			if price>280:#黄金价格一旦高于275
+				Subject='Goldprice'
+				Content='黄金的价格目前为%s,价格较高，可以卖出'%(price)
+				itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
+				MailSender(SenderName,ReceiverAddr,Subject,Content)
+			time.sleep(10)#每十秒爬取一次黄金价格
+		print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+'当前非交易时间,5分钟后重试'+CurrentTime)
+		time.sleep(300)
+	else:
+		print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+'当前为星期%s非交易日，六小时后重试'%(CurrentWeek))
+		time.sleep(21600)
 print('程序终止')
-

@@ -59,8 +59,8 @@ itchat.auto_login(hotReload=True)
 print('程序运行中...')
 ReceiverAddr=['XXX@live.com','XXX@qq.com']#填写收件人邮箱
 SenderName='GoldMonitor'
-CurrentTime=GetTime()
 while 1:
+	CurrentTime=GetTime()
 	while 8<CurrentTime<12 or 13.30<CurrentTime<16 or 20<CurrentTime<24:#仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
 		price=GetPrice()
 		if price<265.4:#黄金价格一旦低于265.4

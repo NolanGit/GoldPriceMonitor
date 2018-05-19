@@ -27,12 +27,11 @@ def GetPrice():
 				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取失败，五分钟后将重试')
 				time.sleep(300)
 			else:
-				print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取成功（红）')
 				break
 		else:
-			print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取成功（绿）')
 			break
 	price=divs.get_text()
+	print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+'数据获取成功:'+price)
 	return float(price)
 def MailSender(SenderName,ReceiverAddr,Subject,Content):
 	my_sender='XXXXX@qq.com'

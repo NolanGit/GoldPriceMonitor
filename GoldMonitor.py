@@ -74,7 +74,7 @@ while 1:
 				itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
 				MailSender(SenderName,ReceiverAddr,Subject,Content)
 			time.sleep(10)#每十秒爬取一次黄金价格
-		print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+'当前非交易时间,5分钟后重试'+CurrentTime)
+		print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+'当前非交易时间,5分钟后重试'+str(CurrentTime))
 		time.sleep(300)
 	else:
 		print((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+'当前为星期%s非交易日，六小时后重试'%(CurrentWeek))

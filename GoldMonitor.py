@@ -29,7 +29,7 @@ def GetPrice():
             if divs == None:
                 divs = soup.find(class_='nom last red')
                 if divs == None:
-                    divs = soup.find(class_='nom last')
+                    divs = soup.find(class_='nom last ')
                     if divs == None:
                         print(time.strftime('%Y-%m-%d %H:%M:%S',
                                             time.localtime(time.time())) + 'logging error...')

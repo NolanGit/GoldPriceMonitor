@@ -18,8 +18,8 @@ def GetTime():
 
 def GetPrice():
     while 1:
+        CurrentTime, CurrentWeek = GetTime()
         if CurrentWeek != 0 and CurrentWeek != 6:
-            CurrentTime, CurrentWeek = GetTime()
             if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 16 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
                 baseurl = 'http://www.dyhjw.com/hjtd'
                 r = requests.get(baseurl)
@@ -56,8 +56,7 @@ def GetPrice():
                                      time.localtime(time.time()))) + '当前非交易时间,5分钟后重试')
                 time.sleep(300)
         else:
-            print((time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-               ) + '当前为星期%s非交易日，六小时后重试' % (CurrentWeek))
+            print((time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + '当前为星期%s非交易日，六小时后重试' % (CurrentWeek))
             time.sleep(21600)
     price = divs.get_text()
     print(time.strftime('%Y-%m-%d %H:%M:%S',
@@ -82,9 +81,8 @@ def MailSender(SenderName, ReceiverAddr, Subject, Content):
     time.sleep(7200)  # 每小时至多发送一次邮件
 
 
-ReceiverAddr = ['XXX@live.com', 'XXX@qq.com', 'XXX@outlook.com']  # 填写收件人邮箱
+ReceiverAddr = ['XX@live.com', 'XX@qq.com', 'XX@outlook.com']  # 填写收件人邮箱
 SenderName = 'GoldMonitor'
-CurrentTime, CurrentWeek = GetTime()
 # itchat.auto_login(hotReload=True)
 print('程序运行中...')
 while 1:
@@ -101,4 +99,4 @@ while 1:
 #               itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
         MailSender(SenderName, ReceiverAddr, Subject, Content)
     time.sleep(10)  # 每十秒爬取一次黄金价格
-print('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '程序终止')
+print(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '程序终止')

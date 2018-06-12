@@ -1,11 +1,14 @@
 # coding=utf-8
 import requests
+import time
+import itchat
+import socket
 from bs4 import BeautifulSoup
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
-import time
-import itchat
+
+socket.setdefaulttimeout(20)
 
 
 def GetTime():
@@ -22,7 +25,8 @@ def GetPrice():
         if CurrentWeek != 0 and CurrentWeek != 6:
             if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 16 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
                 baseurl = 'http://www.dyhjw.com/hjtd'
-                r = requests.get(baseurl)
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                r = requests.get(baseurl, headers=headers)
                 time.sleep(5)  # 避免网速低而加载过慢
                 content = r.text
                 soup = BeautifulSoup(content, 'lxml')
@@ -43,8 +47,8 @@ def GetPrice():
                             print(time.strftime('%Y-%m-%d %H:%M:%S',
                                                 time.localtime(time.time())) + 'logged...')
                             print(time.strftime('%Y-%m-%d %H:%M:%S',
-                                                time.localtime(time.time())) + '数据获取失败，五分钟后将重试')
-                            time.sleep(300)
+                                                time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+                            time.sleep(180)
                         else:
                             break
                     else:
@@ -59,14 +63,15 @@ def GetPrice():
             print((time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + '当前为星期%s非交易日，六小时后重试' % (CurrentWeek))
             time.sleep(21600)
     price = divs.get_text()
+    percent = ((float(price) - 265.41) / 265.41) * 100
     print(time.strftime('%Y-%m-%d %H:%M:%S',
-                        time.localtime(time.time())) + '数据获取成功:' + price)
+                        time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(percent) + '%')
     return float(price)
 
 
 def MailSender(SenderName, ReceiverAddr, Subject, Content):
     my_sender = 'XXX@qq.com'
-    my_pass = 'XXX'  # 这个是需要到QQ邮箱里边获取的口令，不是QQ邮箱密码
+    my_pass = 'XXXX'  # 这个是需要到QQ邮箱里边获取的口令，不是QQ邮箱密码
     ReceiverName = 'Receiver'
     msg = MIMEText(Content, 'plain', 'utf-8',)
     msg['From'] = formataddr([SenderName, my_sender])
@@ -81,13 +86,13 @@ def MailSender(SenderName, ReceiverAddr, Subject, Content):
     time.sleep(7200)  # 每小时至多发送一次邮件
 
 
-ReceiverAddr = ['XX@live.com', 'XX@qq.com', 'XX@outlook.com']  # 填写收件人邮箱
+ReceiverAddr = ['XXX@live.com', 'XXX@qq.com', 'XXX@outlook.com']  # 填写收件人邮箱
 SenderName = 'GoldMonitor'
 # itchat.auto_login(hotReload=True)
 print('程序运行中...')
 while 1:
     price = GetPrice()
-    if price < 265.5:  # 黄金价格一旦低于265.5
+    if price < 267:  # 黄金价格一旦低于265.5
         Subject = 'Goldprice'
         Content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
 # itchat.send((time.strftime('%Y-%m-%d
@@ -96,7 +101,7 @@ while 1:
     if price > 280:  # 黄金价格一旦高于275
         Subject = 'Goldprice'
         Content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
-#               itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
+#				itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
         MailSender(SenderName, ReceiverAddr, Subject, Content)
-    time.sleep(10)  # 每十秒爬取一次黄金价格
+    time.sleep(23)  # 每隔一定时间爬取一次黄金价格
 print(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '程序终止')

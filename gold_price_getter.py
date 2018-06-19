@@ -1,17 +1,11 @@
 # coding=utf-8
-import requests
 import time
-import itchat
-import socket
 from bs4 import BeautifulSoup
-import smtplib
-from email.mime.text import MIMEText
-from email.utils import formataddr
-
-socket.setdefaulttimeout(20)
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
-def GetTime():
+def get_time():
     CurrentHour = int(time.strftime('%H', time.localtime(time.time())))
     CurrentMin = int(time.strftime('%M', time.localtime(time.time())))
     CurrentTime = CurrentHour + CurrentMin / 100
@@ -19,17 +13,19 @@ def GetTime():
     return CurrentTime, CurrentWeek
 
 
-def GetPrice():
+def get_price():
     while 1:
-        CurrentTime, CurrentWeek = GetTime()
+        CurrentTime, CurrentWeek = get_time()
         if CurrentWeek != 0 and CurrentWeek != 6:
             if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 16 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
-                baseurl = 'http://www.dyhjw.com/hjtd'
-                headers = {'User-Agent': 'Mozilla/5.0'}
-                r = requests.get(baseurl, headers=headers)
-                time.sleep(5)  # 避免网速低而加载过慢
-                content = r.text
-                soup = BeautifulSoup(content, 'lxml')
+                chrome_options = Options()
+                chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--log-level=3')
+                driver = webdriver.Chrome(executable_path=(r'C:\\Program Files (x86)\\Google\Chrome\\Application\\chromedriver.exe'), chrome_options=chrome_options)
+                driver.get("http://www.dyhjw.com/hjtd")
+                time.sleep(5)
+                current_html = driver.page_source
+                soup = BeautifulSoup(current_html, 'lxml')
                 divs = soup.find(class_='nom last green')
                 if divs == None:
                     divs = soup.find(class_='nom last red')
@@ -67,41 +63,3 @@ def GetPrice():
     print(time.strftime('%Y-%m-%d %H:%M:%S',
                         time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(percent) + '%')
     return float(price)
-
-
-def MailSender(SenderName, ReceiverAddr, Subject, Content):
-    my_sender = 'XXX@qq.com'
-    my_pass = 'XXXX'  # 这个是需要到QQ邮箱里边获取的口令，不是QQ邮箱密码
-    ReceiverName = 'Receiver'
-    msg = MIMEText(Content, 'plain', 'utf-8',)
-    msg['From'] = formataddr([SenderName, my_sender])
-    msg['to'] = '管理员'
-    msg['Subject'] = Subject
-    server = smtplib.SMTP_SSL("smtp.qq.com", 465)
-    server.login(my_sender, my_pass)
-    server.sendmail(my_sender, ReceiverAddr, msg.as_string())
-    server.quit()
-    print(time.strftime('%Y-%m-%d %H:%M:%S',
-                        time.localtime(time.time())) + '邮件发送成功，一小时后重新获取...')
-    time.sleep(7200)  # 每小时至多发送一次邮件
-
-
-ReceiverAddr = ['XXX@live.com', 'XXX@qq.com', 'XXX@outlook.com']  # 填写收件人邮箱
-SenderName = 'GoldMonitor'
-# itchat.auto_login(hotReload=True)
-print('程序运行中...')
-while 1:
-    price = GetPrice()
-    if price < 267:  # 黄金价格一旦低于265.5
-        Subject = 'Goldprice'
-        Content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
-# itchat.send((time.strftime('%Y-%m-%d
-# %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')#微信发送消息至文件传输助手
-        MailSender(SenderName, ReceiverAddr, Subject, Content)
-    if price > 280:  # 黄金价格一旦高于275
-        Subject = 'Goldprice'
-        Content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
-#				itchat.send((time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))+Content),'filehelper')
-        MailSender(SenderName, ReceiverAddr, Subject, Content)
-    time.sleep(23)  # 每隔一定时间爬取一次黄金价格
-print(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '程序终止')

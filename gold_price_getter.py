@@ -66,4 +66,5 @@ def get_price():
     percent = ((float(price) - 265.41) / 265.41) * 100
     print(time.strftime('%Y-%m-%d %H:%M:%S',
                         time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(percent) + '%')
+    driver.quit()
     return float(price)

@@ -14,6 +14,10 @@ my_pass = 'XXX'
 print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 程序运行中...')
 while 1:
     price = price_getter.get_price()
+    beginning_price = 265.74  # 265.74为购买价格
+    percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
+    print(time.strftime('%Y-%m-%d %H:%M:%S',
+                        time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
     if price < 265:  # 黄金价格一旦低于265.5
         subject = 'Goldprice'
         content = '黄金的价格目前为%s,价格较低，可以买入' % (price)

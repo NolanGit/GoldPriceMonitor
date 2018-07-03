@@ -18,7 +18,8 @@ def get_price():
         try:
             CurrentTime, CurrentWeek = get_time()
             if CurrentWeek != 0 and CurrentWeek != 6:
-                if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 16 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
+                # if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 16 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
+                if 8 < CurrentTime < 12 or 13.30 < CurrentTime < 20 or 20 < CurrentTime < 24:  # 仅在国内黄金市场开盘时间前后进行爬取，24点之后休息时间不爬
                     chrome_options = Options()
                     chrome_options.add_argument('--headless')
                     chrome_options.add_argument('--log-level=3')
@@ -39,8 +40,7 @@ def get_price():
                                     f.write(time.strftime('%Y-%m-%d %H:%M:%S',
                                                           time.localtime(time.time())))
                                     f.write(str(soup))
-                                    f.write(
-                                        '============================================================')
+                                    f.write('=' * 50)
                                 print(time.strftime('%Y-%m-%d %H:%M:%S',
                                                     time.localtime(time.time())) + 'logged...')
                                 print(time.strftime('%Y-%m-%d %H:%M:%S',
@@ -63,8 +63,10 @@ def get_price():
             print(e)
             continue
     price = divs.get_text()
-    percent = ((float(price) - 265.41) / 265.41) * 100
+    '''
+    percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100  # 265.74为购买价格
     print(time.strftime('%Y-%m-%d %H:%M:%S',
-                        time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(percent) + '%')
+                        time.localtime(time.time())) + '数据获取成功:' + price + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
+    '''
     driver.quit()
     return float(price)

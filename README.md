@@ -18,6 +18,6 @@
 * Email If Higher Than:如价格高于XX则发送邮件
 * Email If Lower Than:如价格低于XX则发送邮件
 * Sender Address:发送人地址
-* Sender Password:发送邮箱口令（默认为QQ邮箱）
+* Sender Password:发送邮箱口令（默认为QQ邮箱，脚本运行后会将其替换为\*，无隐私泄露烦恼）
 * Receiver Address:接收人地址（多个接收邮箱以英文分号隔开）
 * Current Status:运行状态（没什么用）

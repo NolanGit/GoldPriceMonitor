@@ -47,9 +47,11 @@ class GoldMonitorGUI(BaseWidget):
             'Current Price': ['current_price'],
             'Settings':['beginning_price', ('high_limit', 'low_limit'), ('sender_address', 'sender_password'), 'receiver_address', ('current_status_label', 'current_status'), ('button')]
         }]
+
         self.current_price_value = '正在获取...'
         self.price_value_string = ''
         self.counter = 0
+        self.mail_flag = 1
 
     def button_action(self):
         try:
@@ -59,15 +61,17 @@ class GoldMonitorGUI(BaseWidget):
             result = list()
             result.append(q.get())
             if self.counter > 7:
-                self.price_value_string = None
+                self.price_value_string = ''
                 self.price_value_string = result[0]
             else:
-                self.price_value_string = result[0] + '\n' + self.price_value_string
+                self.price_value_string = self.price_value_string + '\n' + result[0]
             lock.acquire()
             self.current_price.value = self.price_value_string
             lock.release()
             self.counter += 1
-            self.t = threading.Timer(20, self.button_action).start()
+            self.t = threading.Timer(20, self.button_action)
+            self.t.setDaemon(True)
+            self.t.start()
         except Exception as e:
             traceback.print_exc()
 
@@ -84,52 +88,39 @@ class GoldMonitorGUI(BaseWidget):
             self.sender_name = 'GoldMonitor'
             self.sender_password.value = ('*' * 10)  # 将密码隐藏
 
-    def send_mail(self, price):
-        if price < float(self.low_limit.value):  # 黄金价格一旦低于self.low_limit.value
-            subject = 'Goldprice'
-            content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
-            MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
-            MS.send_it()
-            # time.sleep(7200)  # 两小时至多发一次
-        if price > float(self.high_limit.value):  # 黄金价格一旦高于self.high_limit.value
-            subject = 'Goldprice'
-            content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
-            MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
-            MS.send_it()
-            # time.sleep(7200)  # 两小时至多发一次
-
     def get_price(self):
         price = price_getter.get_price()
         beginning_price = self.beginning_price.value
         percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
         self.current_price_value = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
-        self.send_mail(price)
+        if self.mail_flag == 1:
+            self.func_1()
+        else:
+            pass
         q.put(self.current_price_value)
 
-    def sleep_thread(self):
-        time.sleep(23)  # 每隔一定时间爬取一次黄金价格
+    def func_1(self, price):
+        self.send_mail(price)
+        self.mail_flag = 0
+        timer = threading.Timer(7200, self.func_2)
+        timer.start()
 
-'''
-print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 程序运行中...')
-while 1:
-    price = price_getter.get_price()
-    if price < 265:  # 黄金价格一旦低于265.5
-        subject = 'Goldprice'
-        content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
-        MS = MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content)
-        MS.send_it()
-        time.sleep(7200)  # 两小时至多发一次
-        MailSender(SenderName, ReceiverAddr, Subject, Content)
-    if price > 280:  # 黄金价格一旦高于275
-        Subject = 'Goldprice'
-        Content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
-        MS = MailSender(my_sender, my_pass, sender_name, receiver_addr, subject, content)
-        MS.send_it()
-        time.sleep(7200)  # 两小时至多发一次
-    time.sleep(23)  # 每隔一定时间爬取一次黄金价格
-print(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '程序终止')
-'''
+    def func_2(self):
+        self.mail_flag = 1
+
+    def send_mail(self, price):
+        if price < float(self.low_limit.value):  # 黄金价格一旦低于self.low_limit.value
+            subject = 'Goldprice'
+            content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
+            MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
+            MS.send_it()
+        if price > float(self.high_limit.value):  # 黄金价格一旦高于self.high_limit.value
+            subject = 'Goldprice'
+            content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
+            MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
+            MS.send_it()
+
 
 if __name__ == "__main__":
     pyforms.start_app(GoldMonitorGUI)

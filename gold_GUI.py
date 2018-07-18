@@ -6,7 +6,7 @@ import shutil
 import pyforms
 import traceback
 import threading
-import gold_price_getter as price_getter
+import gold_price_getter_thread as price_getter
 from mail_sender import MailSender
 from pyforms import BaseWidget
 from pyforms.controls import ControlText
@@ -48,10 +48,10 @@ class GoldMonitorGUI(BaseWidget):
             'Settings':['beginning_price', ('high_limit', 'low_limit'), ('sender_address', 'sender_password'), 'receiver_address', ('current_status_label', 'current_status'), ('button')]
         }]
 
-        self.current_price_value = '正在获取...'
+        self.current_text = '正在获取...'
         self.price_value_string = ''
         self.counter = 0
-        self.mail_flag = 1
+        self.send_mail_flag = 1
 
     def button_action(self):
         try:
@@ -90,24 +90,33 @@ class GoldMonitorGUI(BaseWidget):
 
     def get_price(self):
         price = price_getter.get_price()
-        beginning_price = self.beginning_price.value
-        percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
-        self.current_price_value = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
-                                    str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
-        if self.mail_flag == 1:
-            self.func_1()
+        for ch in price:
+            if u'\u4e00' <= ch <= u'\u9fff':
+                error_returned = True
+                break
+            else:
+                error_returned = False
+        if error_returned == False:
+            beginning_price = self.beginning_price.value
+            percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
+            self.current_text = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
+                                 str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
+            if self.send_mail_flag == 1:
+                self.send_mail_thread(float(price))
+            else:
+                pass
         else:
-            pass
-        q.put(self.current_price_value)
+            self.current_text = price
+        q.put(self.current_text)
 
-    def func_1(self, price):
+    def send_mail_thread(self, price):
         self.send_mail(price)
-        self.mail_flag = 0
-        timer = threading.Timer(7200, self.func_2)
+        self.send_mail_flag = 0
+        timer = threading.Timer(7200, self.change_send_mail_flag)
         timer.start()
 
-    def func_2(self):
-        self.mail_flag = 1
+    def change_send_mail_flag(self):
+        self.send_mail_flag = 1
 
     def send_mail(self, price):
         if price < float(self.low_limit.value):  # 黄金价格一旦低于self.low_limit.value

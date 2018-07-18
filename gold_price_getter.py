@@ -23,7 +23,7 @@ def get_price():
                     chrome_options = Options()
                     chrome_options.add_argument('--headless')
                     chrome_options.add_argument('--log-level=3')
-                    driver = webdriver.Chrome(executable_path=(r'C:\\Program Files (x86)\\Google\Chrome\\Application\\chromedriver.exe'), chrome_options=chrome_options)
+                    driver = webdriver.Chrome(executable_path=(r'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chromedriver.exe'), chrome_options=chrome_options)
                     driver.get("http://www.dyhjw.com/hjtd")
                     time.sleep(5)
                     current_html = driver.page_source

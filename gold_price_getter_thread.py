@@ -44,7 +44,12 @@ def get_price():
             hour_flag = 0
             lock.release()
             if hour_flag_changer_flag == 0:  # 如果hour_flag没有正在被更改中
-                threading.Thread(target=hour_flag_changer).start()
+                hour_flag_changer_thread = threading.Thread(target=hour_flag_changer).start()
+                hour_flag_changer_thread.start()
+                hour_flag_changer_thread.join()
+                result = list()
+                result.append(q.get())
+                return result[0]
             else:
                 pass
     else:
@@ -52,7 +57,12 @@ def get_price():
         week_flag = 0
         lock.release()
         if week_flag_changer_flag == 0:  # 如果week_flag没有正在被更改中
-            threading.Thread(target=week_flag_changer).start()
+            week_flag_changer_thread = threading.Thread(target=week_flag_changer).start()
+            week_flag_changer_thread.start()
+            week_flag_changer_thread.join()
+            result = list()
+            result.append(q.get())
+            return result[0]
         else:
             pass
 
@@ -64,7 +74,8 @@ def hour_flag_changer():
     hour_flag_changer_flag = 1  # 加锁
     lock.release()
     threading.Timer(300, change_hour_flag).start()
-    q.put(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '当前非交易时间,五分钟后重试')
+    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前非交易时间,五分钟后重试')
+    q.put(return_result)
 
 
 def change_hour_flag():
@@ -85,7 +96,8 @@ def week_flag_changer():
     week_flag_changer_flag = 1  # 加锁
     lock.release()
     threading.Timer(21600, change_week_flag).start()
-    q.put(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '当前为星期%s非交易日，六小时后重试' % CurrentWeek)
+    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前为星期%s非交易日，六小时后重试' % CurrentWeek)
+    q.put(return_result)
 
 
 def change_week_flag():
@@ -144,7 +156,8 @@ def work_flag_changer():
     work_flag_change_flag = 1
     lock.release()
     threading.Timer(180, change_work_flag).start()
-    q.put(('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+    q.put(return_result)
 
 
 def change_work_flag():

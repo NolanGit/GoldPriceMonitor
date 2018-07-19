@@ -90,24 +90,27 @@ class GoldMonitorGUI(BaseWidget):
 
     def get_price(self):
         price = price_getter.get_price()
-        for ch in price:
-            if u'\u4e00' <= ch <= u'\u9fff':
-                error_returned = True
-                break
-            else:
-                error_returned = False
-        if error_returned == False:
-            beginning_price = self.beginning_price.value
-            percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
-            self.current_text = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
-                                 str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
-            if self.send_mail_flag == 1:
-                self.send_mail_thread(float(price))
-            else:
-                pass
+        if price == None:
+            pass
         else:
-            self.current_text = price
-        q.put(self.current_text)
+            for ch in price:
+                if u'\u4e00' <= ch <= u'\u9fff':
+                    error_returned = True
+                    break
+                else:
+                    error_returned = False
+            if error_returned == False:
+                beginning_price = self.beginning_price.value
+                percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
+                self.current_text = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
+                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
+                if self.send_mail_flag == 1:
+                    self.send_mail_thread(float(price))
+                else:
+                    pass
+            else:
+                self.current_text = price
+            q.put(self.current_text)
 
     def send_mail_thread(self, price):
         self.send_mail(price)

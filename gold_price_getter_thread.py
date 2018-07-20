@@ -51,7 +51,7 @@ def get_price():
                 result.append(q.get())
                 return result[0]
             else:
-                pass
+                return None
     else:
         lock.acquire()
         week_flag = 0
@@ -64,7 +64,7 @@ def get_price():
             result.append(q.get())
             return result[0]
         else:
-            pass
+            return None
 
 
 def hour_flag_changer():
@@ -73,7 +73,9 @@ def hour_flag_changer():
     lock.acquire()
     hour_flag_changer_flag = 1  # 加锁
     lock.release()
-    threading.Timer(300, change_hour_flag).start()
+    hour_flag_changer_thread = threading.Timer(300, change_hour_flag)
+    hour_flag_changer_thread.setDaemon(True)
+    hour_flag_changer_thread.start()
     return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前非交易时间,五分钟后重试')
     q.put(return_result)
 
@@ -95,7 +97,9 @@ def week_flag_changer():
     lock.acquire()
     week_flag_changer_flag = 1  # 加锁
     lock.release()
-    threading.Timer(21600, change_week_flag).start()
+    week_flag_changer_thread = threading.Timer(21600, change_week_flag)
+    week_flag_changer_thread.setDaemon(True)
+    week_flag_changer_thread.start()
     return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前为星期%s非交易日，六小时后重试' % CurrentWeek)
     q.put(return_result)
 
@@ -148,14 +152,16 @@ def start_get_price():
             driver.quit()
             q.put(price)
     else:
-        pass
+        q.put(None)
 
 
 def work_flag_changer():
     lock.acquire()
     work_flag_change_flag = 1
     lock.release()
-    threading.Timer(180, change_work_flag).start()
+    work_flag_changer_thread = threading.Timer(180, change_work_flag)
+    work_flag_changer_thread.setDaemon(True)
+    work_flag_changer_thread.start()
     return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
     q.put(return_result)
 

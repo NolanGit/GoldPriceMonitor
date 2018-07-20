@@ -52,6 +52,7 @@ class GoldMonitorGUI(BaseWidget):
         self.price_value_string = ''
         self.counter = 0
         self.send_mail_flag = 1
+# 待加锁
 
     def button_action(self):
         try:
@@ -110,7 +111,7 @@ class GoldMonitorGUI(BaseWidget):
                     pass
             else:
                 self.current_text = price
-            q.put(self.current_text)
+        q.put(self.current_text)
 
     def send_mail_thread(self, price):
         self.send_mail(price)

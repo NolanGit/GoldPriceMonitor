@@ -68,8 +68,8 @@ def get_price():
 
 
 def hour_flag_changer():
-    global week_flag
     global hour_flag
+    global hour_flag_changer_flag
     lock.acquire()
     hour_flag_changer_flag = 1  # 加锁
     lock.release()
@@ -81,8 +81,8 @@ def hour_flag_changer():
 
 
 def change_hour_flag():
-    global week_flag
     global hour_flag
+    global hour_flag_changer_flag
     lock.acquire()
     hour_flag = 1
     lock.release()
@@ -93,7 +93,7 @@ def change_hour_flag():
 
 def week_flag_changer():
     global week_flag
-    global hour_flag
+    global week_flag_changer_flag
     lock.acquire()
     week_flag_changer_flag = 1  # 加锁
     lock.release()
@@ -106,7 +106,7 @@ def week_flag_changer():
 
 def change_week_flag():
     global week_flag
-    global hour_flag
+    global week_flag_changer_flag
     lock.acquire()
     week_flag = 1
     lock.release()
@@ -117,6 +117,7 @@ def change_week_flag():
 
 def start_get_price():
     global work_flag
+    global work_flag_change_flag
     if work_flag == 1:
         chrome_options = Options()
         chrome_options.add_argument('--headless')
@@ -138,7 +139,7 @@ def start_get_price():
                     if work_flag_change_flag == 0:
                         threading.Thread(target=work_flag_changer).start()
                     else:
-                        pass
+                        q.put(None)
                 else:
                     price = divs.get_text()
                     driver.quit()
@@ -156,6 +157,7 @@ def start_get_price():
 
 
 def work_flag_changer():
+    global work_flag_change_flag
     lock.acquire()
     work_flag_change_flag = 1
     lock.release()
@@ -168,6 +170,7 @@ def work_flag_changer():
 
 def change_work_flag():
     global work_flag
+    global work_flag_change_flag
     lock.acquire()
     work_flag = 1
     lock.release()

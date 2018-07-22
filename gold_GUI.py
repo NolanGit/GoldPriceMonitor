@@ -17,6 +17,7 @@ from pyforms.controls import ControlLabel
 from pyforms.controls import ControlTextArea
 q = queue.Queue()
 lock = threading.Lock()
+button_action_flag = 1
 
 
 class GoldMonitorGUI(BaseWidget):
@@ -24,12 +25,12 @@ class GoldMonitorGUI(BaseWidget):
     def __init__(self):
         super(GoldMonitorGUI, self).__init__('GoldMonitorGUI')
 
+        self.current_price = ControlLabel()
+
         self.beginning_price = ControlText('Beginning Price:')
 
         self.high_limit = ControlText('Email If Higher Than:')
         self.low_limit = ControlText('Email If Lower Than:')
-
-        self.current_price = ControlLabel()
 
         self.sender_address = ControlText('Sender Address:')
         self.sender_password = ControlText('Sender Password:')
@@ -52,11 +53,17 @@ class GoldMonitorGUI(BaseWidget):
         self.price_value_string = ''
         self.counter = 0
         self.send_mail_flag = 1
-# 待加锁
 
     def button_action(self):
+        global button_action_flag
         try:
             self.current_status.value = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())) + '  Program is running...' + ' ' * 10
+            while 1:
+                if button_action_flag == 1:
+                    break
+                else:
+                    pass
+            button_action_flag = 0
             self.init_mail_var()
             self.get_price()
             result = list()
@@ -72,6 +79,7 @@ class GoldMonitorGUI(BaseWidget):
             self.counter += 1
             self.t = threading.Timer(20, self.button_action)
             self.t.setDaemon(True)
+            button_action_flag = 1
             self.t.start()
         except Exception as e:
             traceback.print_exc()

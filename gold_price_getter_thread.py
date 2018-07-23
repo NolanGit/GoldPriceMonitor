@@ -44,7 +44,7 @@ def get_price():
             hour_flag = 0
             lock.release()
             if hour_flag_changer_flag == 0:  # 如果hour_flag没有正在被更改中
-                hour_flag_changer_thread = threading.Thread(target=hour_flag_changer).start()
+                hour_flag_changer_thread = threading.Thread(target=hour_flag_changer)
                 hour_flag_changer_thread.start()
                 hour_flag_changer_thread.join()
                 result = list()
@@ -57,7 +57,7 @@ def get_price():
         week_flag = 0
         lock.release()
         if week_flag_changer_flag == 0:  # 如果week_flag没有正在被更改中
-            week_flag_changer_thread = threading.Thread(target=week_flag_changer).start()
+            week_flag_changer_thread = threading.Thread(target=week_flag_changer)
             week_flag_changer_thread.start()
             week_flag_changer_thread.join()
             result = list()
@@ -94,6 +94,7 @@ def change_hour_flag():
 def week_flag_changer():
     global week_flag
     global week_flag_changer_flag
+    CurrentTime, CurrentWeek = get_time()
     lock.acquire()
     week_flag_changer_flag = 1  # 加锁
     lock.release()

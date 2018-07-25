@@ -18,6 +18,7 @@ from pyforms.controls import ControlTextArea
 q = queue.Queue()
 lock = threading.Lock()
 button_action_flag = 1
+previous_result = ''
 
 
 class GoldMonitorGUI(BaseWidget):
@@ -56,6 +57,7 @@ class GoldMonitorGUI(BaseWidget):
 
     def button_action(self):
         global button_action_flag
+        global previous_result
         try:
             self.current_status.value = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())) + '  Program is running...' + ' ' * 10
             while 1:
@@ -72,11 +74,16 @@ class GoldMonitorGUI(BaseWidget):
             if self.counter > 7:
                 self.price_value_string = ''
                 self.price_value_string = result[0]
+                self.counter = 0
             else:
                 self.price_value_string = self.price_value_string + '\n' + result[0]
-            lock.acquire()
-            self.current_price.value = self.price_value_string
-            lock.release()
+            if previous_result == result[0]:
+                pass
+            else:
+                lock.acquire()
+                previous_result = result[0]
+                self.current_price.value = self.price_value_string
+                lock.release()
             self.t = threading.Timer(20, self.button_action)
             self.t.setDaemon(True)
             button_action_flag = 1
@@ -132,12 +139,12 @@ class GoldMonitorGUI(BaseWidget):
 
     def send_mail(self, price):
         if price < float(self.low_limit.value):  # 黄金价格一旦低于self.low_limit.value
-            subject = 'Goldprice'
+            subject = 'GoldPrice'
             content = '黄金的价格目前为%s,价格较低，可以买入' % (price)
             MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
             MS.send_it()
         if price > float(self.high_limit.value):  # 黄金价格一旦高于self.high_limit.value
-            subject = 'Goldprice'
+            subject = 'GoldPrice'
             content = '黄金的价格目前为%s,价格较高，可以卖出' % (price)
             MS = MailSender(self.my_sender, self.my_pass, self.sender_name, self.receiver_addr, subject, content)
             MS.send_it()

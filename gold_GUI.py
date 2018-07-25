@@ -60,6 +60,7 @@ class GoldMonitorGUI(BaseWidget):
             self.current_status.value = time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time())) + '  Program is running...' + ' ' * 10
             while 1:
                 if button_action_flag == 1:
+                    self.counter += 1
                     break
                 else:
                     pass
@@ -76,7 +77,6 @@ class GoldMonitorGUI(BaseWidget):
             lock.acquire()
             self.current_price.value = self.price_value_string
             lock.release()
-            self.counter += 1
             self.t = threading.Timer(20, self.button_action)
             self.t.setDaemon(True)
             button_action_flag = 1

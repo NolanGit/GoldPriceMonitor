@@ -119,28 +119,33 @@ def change_week_flag():
 def start_get_price():
     global work_flag
     global work_flag_change_flag
-    if work_flag == 1:
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--log-level=3')
-        driver = webdriver.Chrome(executable_path=(r'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chromedriver.exe'), chrome_options=chrome_options)
-        driver.get("http://www.dyhjw.com/hjtd")
-        time.sleep(5)
-        current_html = driver.page_source
-        soup = BeautifulSoup(current_html, 'lxml')
-        divs = soup.find(class_='nom last green')
-        if divs == None:
-            divs = soup.find(class_='nom last red')
+    try:
+        if work_flag == 1:
+            chrome_options = Options()
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--log-level=3')
+            driver = webdriver.Chrome(executable_path=(r'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chromedriver.exe'), chrome_options=chrome_options)
+            driver.get("http://www.dyhjw.com/hjtd")
+            time.sleep(5)
+            current_html = driver.page_source
+            soup = BeautifulSoup(current_html, 'lxml')
+            divs = soup.find(class_='nom last green')
             if divs == None:
-                divs = soup.find(class_='nom last ')
+                divs = soup.find(class_='nom last red')
                 if divs == None:
-                    lock.acquire()
-                    work_flag = 0
-                    lock.release()
-                    if work_flag_change_flag == 0:
-                        threading.Thread(target=work_flag_changer).start()
+                    divs = soup.find(class_='nom last ')
+                    if divs == None:
+                        lock.acquire()
+                        work_flag = 0
+                        lock.release()
+                        if work_flag_change_flag == 0:
+                            threading.Thread(target=work_flag_changer).start()
+                        else:
+                            q.put(None)
                     else:
-                        q.put(None)
+                        price = divs.get_text()
+                        driver.quit()
+                        q.put(price)
                 else:
                     price = divs.get_text()
                     driver.quit()
@@ -150,10 +155,8 @@ def start_get_price():
                 driver.quit()
                 q.put(price)
         else:
-            price = divs.get_text()
-            driver.quit()
-            q.put(price)
-    else:
+            q.put(None)
+    except Exception as e:
         q.put(None)
 
 
@@ -181,14 +184,14 @@ def change_work_flag():
 
 
 '''
-	                    print(time.strftime('%Y-%m-%d %H:%M:%S',
-	                                        time.localtime(time.time())) + 'logging error...')
-	                    with open('C:\\Users\\sunhaoran\\Documents\\goldLog.txt', 'a', encoding='UTF-8')as f:
-	                        f.write(time.strftime('%Y-%m-%d %H:%M:%S',
-	                                              time.localtime(time.time())))
-	                        f.write(str(soup))
-	                        f.write('=' * 50)
-	                    print(time.strftime('%Y-%m-%d %H:%M:%S',
-	                                        time.localtime(time.time())) + 'logged...')
-	                    print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+                        print(time.strftime('%Y-%m-%d %H:%M:%S',
+                                            time.localtime(time.time())) + 'logging error...')
+                        with open('C:\\Users\\sunhaoran\\Documents\\goldLog.txt', 'a', encoding='UTF-8')as f:
+                            f.write(time.strftime('%Y-%m-%d %H:%M:%S',
+                                                  time.localtime(time.time())))
+                            f.write(str(soup))
+                            f.write('=' * 50)
+                        print(time.strftime('%Y-%m-%d %H:%M:%S',
+                                            time.localtime(time.time())) + 'logged...')
+                        print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
 '''

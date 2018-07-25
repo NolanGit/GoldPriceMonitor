@@ -71,17 +71,19 @@ class GoldMonitorGUI(BaseWidget):
             self.get_price()
             result = list()
             result.append(q.get())
-            if self.counter > 7:
-                self.price_value_string = ''
-                self.price_value_string = result[0]
-                self.counter = 0
-            else:
-                self.price_value_string = self.price_value_string + '\n' + result[0]
             if previous_result == result[0]:
                 pass
             else:
                 lock.acquire()
                 previous_result = result[0]
+                lock.release()
+                if self.counter > 7:
+                    self.price_value_string = ''
+                    self.price_value_string = result[0]
+                    self.counter = 0
+                else:
+                    self.price_value_string = self.price_value_string + '\n' + result[0]
+                lock.acquire()
                 self.current_price.value = self.price_value_string
                 lock.release()
             self.t = threading.Timer(20, self.button_action)

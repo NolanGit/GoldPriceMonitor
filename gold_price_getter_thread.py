@@ -76,7 +76,7 @@ def hour_flag_changer():
     hour_flag_changer_thread = threading.Timer(300, change_hour_flag)
     hour_flag_changer_thread.setDaemon(True)
     hour_flag_changer_thread.start()
-    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前非交易时间,五分钟后重试')
+    return_result = (time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time())) + '当前非交易时间,五分钟后重试')
     q.put(return_result)
 
 
@@ -101,7 +101,7 @@ def week_flag_changer():
     week_flag_changer_thread = threading.Timer(21600, change_week_flag)
     week_flag_changer_thread.setDaemon(True)
     week_flag_changer_thread.start()
-    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '当前为星期%s非交易日，六小时后重试' % CurrentWeek)
+    return_result = (time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time())) + '当前为星期%s非交易日，六小时后重试' % CurrentWeek)
     q.put(return_result)
 
 
@@ -168,7 +168,7 @@ def work_flag_changer():
     work_flag_changer_thread = threading.Timer(180, change_work_flag)
     work_flag_changer_thread.setDaemon(True)
     work_flag_changer_thread.start()
-    return_result = (time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+    return_result = (time.strftime('%Y-%m-%d %H-%M-%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
     q.put(return_result)
 
 

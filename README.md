@@ -12,12 +12,13 @@
 ## GUI：
 ### 界面如下图所示
 ![image](https://user-images.githubusercontent.com/27627484/42225568-69dea59e-7f0f-11e8-9e21-45273129d6fa.png)
-![image](https://user-images.githubusercontent.com/27627484/42225581-75db518a-7f0f-11e8-8d2a-551876786946.png)
+![image](https://user-images.githubusercontent.com/27627484/44244268-b29d7580-a205-11e8-9966-4dcbc2f36c91.png)
 ### 参数说明：
-* Beginning Price:买入价格（用于计算收益）
-* Email If Higher Than:如价格高于XX则发送邮件
-* Email If Lower Than:如价格低于XX则发送邮件
-* Sender Address:发送人地址（默认为QQ邮箱端口，如果需要修改需要自行修改源码）
-* Sender Password:发送邮箱口令（非邮箱密码，获取口令方法见：[CSDN](https://blog.csdn.net/xxzhangx/article/details/76757817)，脚本运行后会将明文密码替换为\*，无隐私泄露烦恼）
-* Receiver Address:接收人地址（多个接收邮箱以英文分号隔开）
-* Current Status:运行状态（没什么用）
+* Beginning Price：买入价格（用于计算收益）
+* Amount：买入金额
+* Email If Higher Than：如价格高于XX则发送邮件
+* Email If Lower Than：如价格低于XX则发送邮件
+* Sender Address：发送人地址（默认为QQ邮箱端口，如果需要修改需要自行修改源码）
+* Sender Password：发送邮箱口令（非邮箱密码，获取口令方法见：[CSDN](https://blog.csdn.net/xxzhangx/article/details/76757817)，脚本运行后会将明文密码替换为\*，无隐私泄露烦恼）
+* Receiver Address：接收人地址（多个接收邮箱以英文分号隔开）
+* Current Status：运行状态（没什么用）

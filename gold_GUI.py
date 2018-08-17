@@ -1,4 +1,4 @@
-#coding = utf-8
+# coding = utf-8
 import os
 import time
 import queue
@@ -120,10 +120,10 @@ class GoldMonitorGUI(BaseWidget):
                     error_returned = False
             if error_returned == False:
                 beginning_price = self.beginning_price.value
-                amount = self.amount.value
+                amount = float(self.amount.value)
                 percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
                 self.current_text = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
-                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * (amount / 100))))
+                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round((percent * (amount) / 100), 3))))
                 if self.send_mail_flag == 1:
                     self.send_mail_thread(float(price))
                 else:

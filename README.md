@@ -11,8 +11,8 @@
 ![image](https://user-images.githubusercontent.com/27627484/42225981-68ba612a-7f10-11e8-9b86-207d17de8a89.png)
 ## GUI：
 ### 界面如下图所示
-![image](https://user-images.githubusercontent.com/27627484/42225568-69dea59e-7f0f-11e8-9e21-45273129d6fa.png)
-![image](https://user-images.githubusercontent.com/27627484/44244268-b29d7580-a205-11e8-9966-4dcbc2f36c91.png)
+![image](https://user-images.githubusercontent.com/27627484/44244358-30fa1780-a206-11e8-9b96-23abc6fad413.png)
+![image](https://user-images.githubusercontent.com/27627484/44244337-0740f080-a206-11e8-964a-5eace0d665d3.png)
 ### 参数说明：
 * Beginning Price：买入价格（用于计算收益）
 * Amount：买入金额

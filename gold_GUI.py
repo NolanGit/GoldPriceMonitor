@@ -29,6 +29,7 @@ class GoldMonitorGUI(BaseWidget):
         self.current_price = ControlLabel()
 
         self.beginning_price = ControlText('Beginning Price:')
+        self.amount = ControlText('Amount:')
 
         self.high_limit = ControlText('Email If Higher Than:')
         self.low_limit = ControlText('Email If Lower Than:')
@@ -47,7 +48,7 @@ class GoldMonitorGUI(BaseWidget):
         self.set_margin(15)
         self.formset = [{
             'Current Price': ['current_price'],
-            'Settings':['beginning_price', ('high_limit', 'low_limit'), ('sender_address', 'sender_password'), 'receiver_address', ('current_status_label', 'current_status'), ('button')]
+            'Settings':[('beginning_price', 'amount'), ('high_limit', 'low_limit'), ('sender_address', 'sender_password'), 'receiver_address', ('current_status_label', 'current_status'), ('button')]
         }]
 
         self.current_text = '正在获取...'
@@ -119,9 +120,10 @@ class GoldMonitorGUI(BaseWidget):
                     error_returned = False
             if error_returned == False:
                 beginning_price = self.beginning_price.value
+                amount = self.amount.value
                 percent = ((float(price) - float(beginning_price)) / float(beginning_price)) * 100
                 self.current_text = (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' 数据获取成功:' +
-                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * 75)))
+                                     str(price) + ',涨跌幅为' + str(round(percent, 3)) + '%' + '盈亏为' + str((round(percent, 3) * (amount / 100))))
                 if self.send_mail_flag == 1:
                     self.send_mail_thread(float(price))
                 else:

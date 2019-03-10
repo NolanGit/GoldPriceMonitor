@@ -56,5 +56,5 @@ def get_gold_price():
     driver.quit()
 
 
-a = get_app_price()
+a = get_gold_price()
 print(a)

@@ -1,10 +1,9 @@
 # -*- coding:utf-8 -*-
-import re
+import os
 import sys
 import time
-import queue
 import requests
-import threading
+import sqlalchemy
 sys.path.append('../')
 sys.path.append('../../')
 from bs4 import BeautifulSoup
@@ -13,8 +12,9 @@ from Common.Tools import Tools
 #from Common.Mail_Sender import MailSender
 from Common.Global_Var import Global_Var
 from selenium.webdriver.chrome.options import Options
-q = queue.Queue()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+database='sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
 def get_gold_price():
     '''

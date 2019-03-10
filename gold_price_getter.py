@@ -20,6 +20,9 @@ def get_app_price():
     '''
         爬取数据：接收app的Url后缀，返回app的名字和价格。
     '''
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--log-level=3')
     driver = webdriver.Chrome(executable_path=('/usr/lib/chromium-browser/chromedriver'), chrome_options=chrome_options)
     driver.get("http://www.dyhjw.com/hjtd")
     time.sleep(5)

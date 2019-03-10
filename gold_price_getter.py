@@ -16,16 +16,45 @@ from selenium.webdriver.chrome.options import Options
 q = queue.Queue()
 
 
-def get_app_price():
+def get_gold_price():
     '''
-        爬取数据：接收app的Url后缀，返回app的名字和价格。
+    返回当前黄金价格
     '''
+
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--log-level=3')
     driver = webdriver.Chrome(executable_path=('/usr/lib/chromium-browser/chromedriver'), chrome_options=chrome_options)
-    driver.get("http://www.dyhjw.com/hjtd")
-    time.sleep(5)
-    current_html = driver.page_source
-    print (current_html)
-get_app_price()
+
+    for x in range(5):
+        driver.get("http://www.dyhjw.com/hjtd")
+        time.sleep(5)
+        current_html = driver.page_source
+        soup = BeautifulSoup(current_html, 'lxml')
+
+        divs = soup.find(class_='nom last green')
+        if not divs:
+            divs = soup.find(class_='nom last red')
+            if not divs:
+                divs = soup.find(class_='nom last ')
+                if not divs:
+                    print('=' * 20 + str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))) + '=' * 20)
+                    print(str(soup))
+                    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + '数据获取失败，三分钟后将重试')
+                    time.sleep(180)
+                else:
+                    break
+            else:
+                break
+        else:
+            break
+
+    if divs:
+        return float(divs.get_text())
+    else:
+        return None
+    driver.quit()
+
+
+a = get_app_price()
+print(a)

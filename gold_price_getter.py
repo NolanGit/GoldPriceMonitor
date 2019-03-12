@@ -59,5 +59,8 @@ def get_gold_price():
 
 price = get_gold_price()
 print(price)
-crawling_times = len(Price.select().where(Price.date == datetime.date))
+try:
+    crawling_times = len(Price.select().where(Price.date == datetime.date))
+except Exception:
+    crawling_times = 0
 p = Price(price=price, date=datetime.date, crawling_times=crawling_times, time=datetime.time)

@@ -3,7 +3,7 @@ import peewee
 import datetime
 
 PATH = lambda p: os.path.abspath(os.path.join(os.path.dirname(__file__), p))
-database = peewee.SqliteDatabase(PATH("..\\database.db"))
+database = peewee.SqliteDatabase(PATH("../database.db"))
 
 
 class Price(peewee.Model):

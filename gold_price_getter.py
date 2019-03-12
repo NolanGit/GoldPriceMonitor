@@ -64,3 +64,4 @@ try:
 except Exception:
     crawling_times = 0
 p = Price(price=price, date=datetime.date, crawling_times=crawling_times, time=datetime.time)
+p.save()

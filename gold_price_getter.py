@@ -2,19 +2,20 @@
 import os
 import sys
 import time
+import peewee
+import datetime
 import requests
-import sqlalchemy
-sys.path.append('../')
-sys.path.append('../../')
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from Common.Tools import Tools
-#from Common.Mail_Sender import MailSender
-from Common.Global_Var import Global_Var
 from selenium.webdriver.chrome.options import Options
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-database='sqlite:///' + os.path.join(basedir, 'data.sqlite')
+sys.path.append('../')
+sys.path.append('../../')
+from Common.Tools import Tools
+from Common.model import Price
+from Common.Mail_Sender import MailSender
+from Common.Global_Var import Global_Var
+
 
 def get_gold_price():
     '''
@@ -56,5 +57,7 @@ def get_gold_price():
     driver.quit()
 
 
-a = get_gold_price()
-print(a)
+price = get_gold_price()
+print(price)
+crawling_times = len(Price.select().where(Price.date == datetime.date))
+p = Price(price=price, date=datetime.date, crawling_times=crawling_times, time=datetime.time)

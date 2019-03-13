@@ -5,6 +5,8 @@ import time
 import peewee
 import datetime
 import requests
+import platform
+import configparser
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -49,26 +51,41 @@ def get_gold_price():
                 break
         else:
             break
-
+    driver.quit()
     if divs:
         return float(divs.get_text())
     else:
         return None
-    driver.quit()
 
-def send_mail_threshold(max,min,price):
-    if price> max:
-        mail=Mailsender()
-    if price< min:
-        pass
+
+def save_data(price):
+    try:
+        crawling_times = int(len(Price.select().where(Price.date == datetime.datetime.now().date())))
+    except Exception:
+        crawling_times = 0
+    p = Price(price=price, date=datetime.datetime.now().date(), crawling_times=crawling_times, time=datetime.datetime.now().strftime('%H:%M:%S'))
+    p.save()
+    print('price saved...')
+
+
+def send_mail_threshold(max, min, price):
+    cf = configparser.ConfigParser()
+    if 'Windows' in platform.platform() and 'Linux' not in platform.platform():
+        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' Using C:/Users/sunhaoran/Documents/GitHub/ServerTools/ServerTools.config ...')
+        cf.read('C:/Users/sunhaoran/Documents/GitHub/ServerTools/ServerTools.config')
+    elif 'Linux' in platform.platform() and 'Ubuntu' not in platform.platform():
+        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' Using /home/pi/Documents/Github/ServerTools/ServerTools.config ...')
+        cf.read('/home/pi/Documents/Github/RaspberryPi.config')
+    elif 'Ubuntu' in platform.platform():
+        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + ' Using /root/Documents/GitHub/ServerTools/ServerTools.config ...')
+        cf.read('/root/Documents/GitHub/ServerTools/ServerTools.config')
+    GOLD_MAIL_FLAG = cf.get('config', 'GOLD_MAIL_FLAG')
+
+    price = int(price)
+    if (price > max or price < min) and GOLD_MAIL_FLAG:
+        mail = MailSender('Administrator', 'Gold Price Monitor', 'current gold price is ' + price)
+
+
 price = get_gold_price()
-print(price)
-try:
-    crawling_times = int(len(Price.select().where(Price.date == datetime.datetime.now().date())))
-except Exception:
-    crawling_times = 0
-p = Price(price=price, date= datetime.datetime.now().date(), crawling_times=crawling_times, time=datetime.datetime.now().strftime('%H:%M:%S'))
-p.save()
-print('price saved...')
-
-
+save_data(price)
+send_mail_threshold(300, 270, price)

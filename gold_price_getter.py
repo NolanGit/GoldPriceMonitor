@@ -56,7 +56,11 @@ def get_gold_price():
         return None
     driver.quit()
 
-
+def send_mail_threshold(max,min,price):
+    if price> max:
+        mail=Mailsender()
+    if price< min:
+        pass
 price = get_gold_price()
 print(price)
 try:
@@ -65,3 +69,6 @@ except Exception:
     crawling_times = 0
 p = Price(price=price, date= datetime.datetime.now().date(), crawling_times=crawling_times, time=datetime.datetime.now().strftime('%H:%M:%S'))
 p.save()
+print('price saved...')
+
+

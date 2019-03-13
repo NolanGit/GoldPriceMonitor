@@ -60,9 +60,8 @@ def get_gold_price():
 price = get_gold_price()
 print(price)
 try:
-    crawling_times = int(len(Price.select().where(Price.date == datetime.date)))
+    crawling_times = int(len(Price.select().where(Price.date == datetime.datetime.now().date())))
 except Exception:
     crawling_times = 0
-print(price, datetime.date, crawling_times, datetime.time)
-p = Price(price=price, date=datetime.date, crawling_times=crawling_times, time=datetime.time)
+p = Price(price=price, date= datetime.datetime.now().date(), crawling_times=crawling_times, time=datetime.datetime.now().strftime('%H:%M:%S'))
 p.save()
